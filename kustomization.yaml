@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- manifests/statefulset.yaml
+- manifests/pong-config.yaml
+- manifests/pong-deployment.yaml
+- manifests/pong-service.yaml
+- manifests/pong-nodeport-service.yaml 
+- manifests/main-config.yaml
+- manifests/main-deployment.yaml
+- manifests/main-service.yaml
+- manifests/pong-hpa.yaml
+- manifests/main-hpa.yaml
+- manifests/ingress.yaml
+secretGenerator:
+- files:
+  - POSTGRES_PASSWORD
+  name: db-password
+  namespace: apps
+  type: Opaque

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pong-dep
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pong
+  template:
+    metadata:
+      labels:
+        app: pong
+    spec:
+      containers:
+        - name: pong
+          image: katilp/ex2-07-pong:v1.0.2
+          resources:
+            limits:
+              cpu: "200m" # limit "m" stands for "thousandth of a core"
+              memory: "100Mi"
+          env:
+            - name: POSTGRES_PASSWORD # ENV name passed to container
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: POSTGRES_PASSWORD # ENV name in the secret
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: pong-config # this is ConfigMap Name
+                  key: PGUSER # this is key in ConfigMap
+            - name: PGDATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: pong-config
+                  key: PGDATABASE
+            - name: DATABASE_URL
+              value: "postgres://$(PGUSER):$(POSTGRES_PASSWORD)@postgres-svc.apps.svc:5432/$(PGDATABASE)"
+          # ports:
+          #   - name: http
+          #     containerPort: 80

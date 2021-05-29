@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  PGDATABASE: testdb
+  PGUSER: postgres
+  DB_HOST: http://pong-svc.apps.svc
+  MESSAGE: Hello
+  PORT: "3001"
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: main-config
+  namespace: apps

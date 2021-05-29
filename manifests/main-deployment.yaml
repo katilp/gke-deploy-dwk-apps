@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ex2-07-main-dep
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ex2-07-main
+  template:
+    metadata:
+      labels:
+        app: ex2-07-main
+    spec:
+      containers:
+        - name: ex2-07-main
+          image: katilp/ex2-07-main:v1.0.2
+          resources:
+            limits:
+              cpu: "200m" # limit "m" stands for "thousandth of a core"
+              memory: "100Mi"
+          env:
+            - name: POSTGRES_PASSWORD # ENV name passed to container
+              valueFrom:
+                secretKeyRef:
+                  name: db-password
+                  key: POSTGRES_PASSWORD # ENV name in the secret
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config # this is ConfigMap Name
+                  key: PORT # this is key in ConfigMap
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: MESSAGE
+            - name: PGUSER
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config # this is ConfigMap Name
+                  key: PGUSER # this is key in ConfigMap
+            - name: PGDATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: PGDATABASE
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: main-config
+                  key: DB_HOST      
+            - name: DATABASE_URL
+              value: "postgres://$(PGUSER):$(POSTGRES_PASSWORD)@postgres-svc.apps.svc:5432/$(PGDATABASE)"
+
